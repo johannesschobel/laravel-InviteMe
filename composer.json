@@ -1,0 +1,25 @@
+{
+    "name": "johannesschobel/laravel-inviteme",
+    "description": "Invite Package for Laravel",
+    "license": "MIT",
+    "keywords": [
+		"laravel", "Invite", "Invitation"
+	],
+    "authors": [
+        {
+            "name": "Johannes Schobel",
+            "email": "johannes.schobel@googlemail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+		"laravel/framework": "5.1.*"
+    },
+    "require-dev": {
+	},
+    "autoload": {
+        "psr-0": {
+            "JohannesSchobel\\InviteMe": "src/"
+        }
+    }
+}
