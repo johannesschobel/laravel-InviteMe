@@ -26,6 +26,8 @@ class CreateInvitationsTable extends Migration
             $table->string('model_type')->nullable();
             $table->integer('model_id')->nullable();
 
+            $table->text('custom')->nullable();
+
             $table->timestamps();
         });
     }

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use JohannesSchobel\InviteMe\Models\Invitation;
 
-class InviteManager
+class InvitationManager
 {
 
     /**
@@ -32,13 +32,14 @@ class InviteManager
 
     /**
      * Create a new invitation for a email address.
-     * 
+     *
      * @param $email
      * @param integer $days null if config value should be used!
      * @param object $model The model, for which this invitation is valid
+     * @param null $custom
      * @return Invitation|null
      */
-    public function createInvitation($email, $days = null, $model = null) {
+    public function createInvitation($email, $days = null, $model = null, $custom = null) {
 
         if($days == null) {
             $days = config('inviteme.days');
@@ -72,6 +73,8 @@ class InviteManager
             $tmp->model_id = $model->id;
         }
 
+        $tmp->custom = $custom;
+
         $tmp->save();
         $invitation = $tmp;
 
@@ -81,22 +84,12 @@ class InviteManager
     /**
      * Accept an Invitation. The invitation, however, must be active, not accepted till now and still not expired!
      *
-     * @param $email
-     * @param $code
+     * @param Invitation $invitation
      * @return bool
      */
-    public function acceptInvitation($email, $code) {
+    public function acceptInvitation(Invitation $invitation) {
 
-        $invitation = Invitation::where('email', '=', $email)
-                                ->where('code', '=', $code)
-                                ->where('is_accepted', false)
-                                ->first();
-
-        if(! $invitation) {
-            // something went wrong!
-            return false;
-        }
-
+        // check if it is expired yet
         if($invitation->isExpired()) {
             // it has already expired
             return false;
@@ -113,29 +106,22 @@ class InviteManager
     /**
      * Withdraw ( = delete) an Invitation
      *
-     * @param $email
-     * @param $code
+     * @param Invitation $invitation
      * @return bool
      */
-    public function withdrawInvitation($email, $code) {
-        $invitation = Invitation::where('email', '=', $email)->where('code', '=', $code)->delete();
+    public function withdrawInvitation(Invitation $invitation) {
+        $invitation->delete();
         return true;
     }
 
     /**
      * Extend an Invitation for another n days. now + n days!
      *
-     * @param $email
-     * @param $code
+     * @param Invitation $invitation
      * @param $days
      * @return bool
      */
-    public function extendInvitation($email, $code, $days) {
-        $invitation = Invitation::where('email', '=', $email)->where('code', '=', $code)->first();
-        if(!$invitation) {
-            return false;
-        }
-
+    public function extendInvitation(Invitation $invitation, $days) {
         $invitation->expires_at = Carbon::now()->addDays($days)->toDateTimeString();
         $invitation->save();
 
