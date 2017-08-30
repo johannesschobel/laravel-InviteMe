@@ -20,8 +20,9 @@ class InvitationManager
     public function hasInvitation($email, $model = null, $open = false) {
         $tmp = Invitation::where('email', '=', $email)->where('is_active', true)->where('model_type', '=', $model);
         if($open) {
-            $tmp = $tmp->where('is_accepted', false);
+            $tmp = $tmp->where('is_accepted', '=', false);
         }
+
         $tmp = $tmp->first();
 
         if($tmp) {
@@ -48,9 +49,8 @@ class InvitationManager
         $invitation = null;
 
         // check, if the email has already an invitation
-        if($this->hasInvitation($email, get_class($model), false)) {
+        if($this->hasInvitation($email, get_class($model), true)) {
             // there already exists an invitation -- get it
-
             $invitation = Invitation::where('email', '=', $email)
                                 ->where('is_active', true)
                                 ->where('model_type', '=', get_class($model))
