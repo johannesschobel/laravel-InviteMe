@@ -20,7 +20,7 @@ class InvitationManager
     public function hasInvitation($email, $model = null, $open = false) {
         $tmp = Invitation::where('email', '=', $email)->where('is_active', true)->where('model_type', '=', $model);
         if($open) {
-            $tmp = $tmp->where('is_accepted', '=', false);
+            $tmp = $tmp->where('is_accepted', '=', false)->where('expires_at', '>=', Carbon::now();
         }
 
         $tmp = $tmp->first();
