@@ -13,12 +13,15 @@ class InvitationManager
      * Checks, if there is an active invitation for this email address
      *
      * @param String $email the Email to be checked
-     * @param String $model The class to be checked
+     * @param object $model The model to be checked
      * @param Boolean $open check only pending (e.g., is_accepted == false) Invitations
      * @return bool
      */
     public function hasInvitation($email, $model = null, $open = false) {
-        $tmp = Invitation::where('email', '=', $email)->where('is_active', true)->where('model_type', '=', $model);
+        $tmp = Invitation::where('email', '=', $email)->where('is_active', true);
+        if($model) {
+            $tmp = $tmp->where('model_type', '=', get_class($model))->where('model_id', '=', $model->id);
+        }
         if($open) {
             $tmp = $tmp->where('is_accepted', '=', false)->where('expires_at', '>=', Carbon::now());
         }
@@ -49,7 +52,7 @@ class InvitationManager
         $invitation = null;
 
         // check, if the email has already an invitation
-        if($this->hasInvitation($email, get_class($model), true)) {
+        if($this->hasInvitation($email, $model, true)) {
             // there already exists an invitation -- get it
             $invitation = Invitation::where('email', '=', $email)
                                 ->where('is_active', true)
