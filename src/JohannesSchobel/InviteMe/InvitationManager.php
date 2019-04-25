@@ -57,6 +57,9 @@ class InvitationManager
             $invitation = Invitation::where('email', '=', $email)
                                 ->where('is_active', true)
                                 ->where('model_type', '=', get_class($model))
+                                ->where('model_id', '=', $model->id)
+                                ->where('is_accepted', '=', false)
+                                ->where('expires_at', '>=', Carbon::now())
                                 ->first();
             return $invitation;
         }
